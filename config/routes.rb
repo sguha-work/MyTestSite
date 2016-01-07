@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'fc_exporter/pageLoad'
+
   get 'index/pageLoad'
 
   # The priority is based upon order of creation: first created -> highest priority.
