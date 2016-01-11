@@ -13,10 +13,12 @@ class FcExporterController < ApplicationController
   end
 
   def stichImageToSVG(svgString, imageData)
-  	imageDataArray = JSON.parse(imageData);
+  	imageDataArray = JSON.parse(imageData); # parsing the image data object
+  	keys = imageDataArray.keys # holds the keys like image_1, image_2 etc  
   	imageDataArray.each do |image|
-    	puts "Hello World!"
+    	
 	end
+	
   end	
 
   # This function coverts the provided SVG string to image
