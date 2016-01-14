@@ -51,13 +51,32 @@ class FcExporterController < ApplicationController
 	
   end	
 
+  def raiseError(errorCode)
+  	errorArray = {'100' => " Insufficient data.", '101' => " Width/height not provided.", '102' => " Insufficient export parameters.", '400' => " Bad request.", '401' => " Unauthorized access.", '403' => " Directory write access forbidden.", '404' => " Export Resource not found."}
+
+  end	
+
+  def sendFileToDownload(fileName)
+  	send_file(fileName)
+  end	
+
   # This function coverts the provided SVG string to image or pdf file
   def convertSVGtoImageOrPdf(svgString, exportFileName, exportFileFormat)
-  	img = Magick::Image.from_blob(svgString) {
-	  self.format = 'SVG'
-	}
+  	completeFileName = exportFileName+"."+exportFileFormat
+  	if !File.exist?('image.jpg')
+	  	if exportFileFormat != "svg"
+		  	img = Magick::Image.from_blob(svgString) {
+			  self.format = 'SVG'
+			}
 
-	img[0].write(exportFileName+"."+exportFileFormat)
+			img[0].write(completeFileName)
+		else
+			File.open(completeFileName, 'w') {|f| f.write(svgString) }	
+		end
+		sendFileToDownload(completeFileName)
+	else
+		raiseError()	
+	end	
   end	
 end
 
