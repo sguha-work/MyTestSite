@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   #get 'fc_exporter/pageLoad'
 
-  post 'fc_exporter/pageLoad'
+  post 'fc_exporter/init'
 
   get 'index/pageLoad'
 

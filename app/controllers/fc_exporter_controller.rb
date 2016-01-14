@@ -5,8 +5,11 @@ require "RMagick"
 require 'rubygems'
 require 'json'
 class FcExporterController < ApplicationController
-  protect_from_forgery with: :null_session
-  def pageLoad
+  
+  # following line is required thus the controller can be called from javascript without any key authentication
+  protect_from_forgery with: :null_session 
+  
+  def init
   	requestObject = parseRequestParams(request.POST)
   	stream = requestObject['stream']
   	if requestObject['imageData'] != ""
@@ -15,18 +18,34 @@ class FcExporterController < ApplicationController
   	convertSVGtoImageOrPdf(stream, requestObject['exportFileName'] ,requestObject['exportFormat'])	
   end
 
-  # this function purse the request and create the request Data object
+  # From here all the declared members are private in nature
+  private
+
+  # This function purse the request and create the request Data object
   def parseRequestParams(requestData)
+  	# Following values are expected to have from request stream
+  	stream = ""
+  	imageData = ""
+  	
+  	width = 0
+  	height = 0
+  	exportFileName = ""
+  	exportFormat = ""
+  	exportAction = ""
+
   	stream = requestData['stream']
+  	if requestData['encodedImgData']
+  		imageData = requestData['encodedImgData']
+  	end
+  	width = requestData['meta_width']
+  	height = requestData['meta_height']
   	parametersArray = requestData['parameters'].split("|")
   	exportFileName = parametersArray[0].split("=").last
   	exportFormat = parametersArray[1].split("=").last
   	exportAction = parametersArray[2].split("=").last
-  	imageData = ""
-  	if requestData['encodedImgData']
-  		imageData = requestData['encodedImgData']
-  	end
-  	requestObject = {'stream' => stream, 'exportFileName' => exportFileName, 'exportFormat' => exportFormat, 'exportAction' => exportAction, 'imageData' => imageData}
+  	
+  	# preparing the request object
+  	requestObject = {'stream' => stream, 'imageData' => imageData, 'width' => width, 'height' => height, 'exportFileName' => exportFileName, 'exportFormat' => exportFormat, 'exportAction' => exportAction}
 
   	return requestObject
   end	
