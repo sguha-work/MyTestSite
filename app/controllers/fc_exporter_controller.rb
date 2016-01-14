@@ -46,7 +46,15 @@ class FcExporterController < ApplicationController
   	exportAction = parametersArray[2].split("=").last
   	
   	# preparing the request object
-  	requestObject = {'stream' => stream, 'imageData' => imageData, 'width' => width, 'height' => height, 'exportFileName' => exportFileName, 'exportFormat' => exportFormat, 'exportAction' => exportAction}
+  	requestObject = {
+  		'stream' => stream, 
+  		'imageData' => imageData, 
+  		'width' => width, 
+  		'height' => height, 
+  		'exportFileName' => exportFileName, 
+  		'exportFormat' => exportFormat, 
+  		'exportAction' => exportAction
+  	}
 
   	return requestObject
   end	
@@ -79,8 +87,15 @@ class FcExporterController < ApplicationController
 
   # this method raise the error based on the error code
   def raiseError(errorCode)
-  	errorArray = {'100' => " Insufficient data.", '101' => " Width/height not provided.", '102' => " Insufficient export parameters.", '400' => " Bad request.", '401' => " Unauthorized access.", '403' => " Directory write access forbidden.", '404' => " Export Resource not found."}
-
+  	errorArray = {
+  			'100' => " Insufficient data.", 
+  			'101' => " Width/height not provided.", 
+  			'102' => " Insufficient export parameters.", 
+  			'400' => " Bad request.", 
+  			'401' => " Unauthorized access.", 
+  			'403' => " Directory write access forbidden.", 
+  			'404' => " Export Resource not found."
+  		}
   end	
 
   # this function sends the provided file as downloadable to the browser
