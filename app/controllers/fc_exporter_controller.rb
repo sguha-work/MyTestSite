@@ -9,6 +9,7 @@ class FcExporterController < ApplicationController
   # following line is required thus the controller can be called from javascript without any key authentication
   protect_from_forgery with: :null_session 
   
+  # this method should be called as http://localhost:<PORT-NUMBER(eg. 3000)>/fc_exporter/init/ from javascript
   def init
   	requestObject = parseRequestParams(request.POST)
   	stream = requestObject['stream']
@@ -24,13 +25,13 @@ class FcExporterController < ApplicationController
   # This function purse the request and create the request Data object
   def parseRequestParams(requestData)
   	# Following values are expected to have from request stream
-  	stream = ""
-  	imageData = ""
-  	
-  	width = 0
-  	height = 0
-  	exportFileName = ""
-  	exportFormat = ""
+  	stream = "" # expected to hold the SVG string coming from the chart
+  	imageData = "" # if the request contains raw image data then those will go here
+  	parametersArray = [] # holds the parameters
+  	width = 0 # holds the width of exported image
+  	height = 0 # holds the height of exported image
+  	exportFileName = "" # holds the name of the exported file
+  	exportFormat = "" # holds the format of the exported files
   	exportAction = ""
 
   	stream = requestData['stream']
