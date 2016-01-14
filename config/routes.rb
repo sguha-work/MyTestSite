@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   get 'welcome/index'
 
-  get 'fc_exporter/pageLoad'
+  #get 'fc_exporter/pageLoad'
+
+  post 'fc_exporter/pageLoad'
 
   get 'index/pageLoad'
 
