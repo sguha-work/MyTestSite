@@ -138,6 +138,7 @@ class FcExporterController < ApplicationController
   			"403" => " Directory write access forbidden.", 
   			"404" => " Export Resource not found."
   		}
+  	send_data errorArray[errorCode], :disposition => 'inline'	
   end	
 
   # this function sends the provided file as downloadable to the browser
