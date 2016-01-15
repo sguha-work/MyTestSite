@@ -56,26 +56,30 @@ class FcExporterController < ApplicationController
   	exportFormat = "" # holds the format of the exported files
   	exportAction = ""
 
-  	stream = requestData['stream']
-  	if requestData['encodedImgData']
-  		imageData = requestData['encodedImgData']
+  	stream = requestData["stream"]
+  	if requestData["encodedImgData"]
+  		imageData = requestData["encodedImgData"]
   	end
-  	width = requestData['meta_width']
-  	height = requestData['meta_height']
-  	parametersArray = requestData['parameters'].split("|")
+  	if requestData["meta_width"]!="" && requestData["meta_height"] !=""
+  		width = requestData["meta_width"]
+  		height = requestData["meta_height"]
+  	else
+  		raiseError("101")	
+  	end
+  	parametersArray = requestData["parameters"].split("|")
   	exportFileName = parametersArray[0].split("=").last
   	exportFormat = parametersArray[1].split("=").last
   	exportAction = parametersArray[2].split("=").last
   	
   	# preparing the request object
   	requestObject = {
-  		'stream' => stream, 
-  		'imageData' => imageData, 
-  		'width' => width, 
-  		'height' => height, 
-  		'exportFileName' => exportFileName, 
-  		'exportFormat' => exportFormat, 
-  		'exportAction' => exportAction
+  		"stream" => stream, 
+  		"imageData" => imageData, 
+  		"width" => width, 
+  		"height" => height, 
+  		"exportFileName" => exportFileName, 
+  		"exportFormat" => exportFormat, 
+  		"exportAction" => exportAction
   	}
 
   	return requestObject
@@ -110,13 +114,13 @@ class FcExporterController < ApplicationController
   # this method raise the error based on the error code
   def raiseError(errorCode)
   	errorArray = {
-  			'100' => " Insufficient data.", 
-  			'101' => " Width/height not provided.", 
-  			'102' => " Insufficient export parameters.", 
-  			'400' => " Bad request.", 
-  			'401' => " Unauthorized access.", 
-  			'403' => " Directory write access forbidden.", 
-  			'404' => " Export Resource not found."
+  			"100" => " Insufficient data.", 
+  			"101" => " Width/height not provided.", 
+  			"102" => " Insufficient export parameters.", 
+  			"400" => " Bad request.", 
+  			"401" => " Unauthorized access.", 
+  			"403" => " Directory write access forbidden.", 
+  			"404" => " Export Resource not found."
   		}
   end	
 
@@ -128,27 +132,27 @@ class FcExporterController < ApplicationController
   # This function coverts the provided SVG string to image or pdf file
   def convertSVGtoImageOrPdf(svgString, exportFileName, exportFileFormat)
   	completeFileName = SAVE_PATH+exportFileName+"."+exportFileFormat
-  	if !File.exist?('image.jpg') 
-	  	if exportFileFormat != "svg"
-		  	img = Magick::Image.from_blob(svgString) {
-			  self.format = 'SVG'
-			}
-			begin
-				img[0].write(completeFileName)
-			rescue
-				raiseError("403") # raising error if image cannot be created	
-			end	
-		else
-			begin
-				file = File.open(completeFileName, 'w')
-				file.write(svgString) 
-				file.close()
-			rescue
-				raiseError("403") # raising error if file cannot be created	
-			end
+  	
+  	if exportFileFormat != "svg"
+	  	img = Magick::Image.from_blob(svgString) {
+		  self.format = "SVG"
+		}
+		begin
+			img[0].write(completeFileName)
+		rescue
+			raiseError("403") # raising error if image cannot be created	
+		end	
+	else
+		begin
+			file = File.open(completeFileName, "w")
+			file.write(svgString) 
+			file.close()
+		rescue
+			raiseError("403") # raising error if file cannot be created	
 		end
-		sendFileToDownload(completeFileName)
-	end	
+	end
+	sendFileToDownload(completeFileName)
+	
   end	
 end
 
