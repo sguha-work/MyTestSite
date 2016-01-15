@@ -9,8 +9,16 @@ class FcExporterController < ApplicationController
   # following line is required thus the controller can be called from javascript without any key authentication
   protect_from_forgery with: :null_session 
   
+  # settings variable declaration begins
+  SAVE_PATH = "ExportedImages/"
+  # settings variable declaration ends
+
   # this method should be called as http://localhost:<PORT-NUMBER(eg. 3000)>/fc_exporter/init/ from javascript
   def init
+  	
+
+  	checkAndCreateDirectories([SAVE_PATH])
+
   	requestObject = parseRequestParams(request.POST)
   	stream = requestObject['stream']
   	if requestObject['imageData'] != ""
@@ -21,6 +29,16 @@ class FcExporterController < ApplicationController
 
   # From here all the declared members are private in nature
   private
+
+  # this function check for the directories needed to export image
+  # if not present then it creates the directories
+  def checkAndCreateDirectories(directoriesNameArray)
+  	directoriesNameArray.each do |directoryName|
+  		if !File.directory?(directoryName) # if the directory doesn't exists create that
+  			Dir.mkdir directoryName
+  		end	
+  	end	
+  end	
 
   # This function purse the request and create the request Data object
   def parseRequestParams(requestData)
@@ -105,7 +123,7 @@ class FcExporterController < ApplicationController
 
   # This function coverts the provided SVG string to image or pdf file
   def convertSVGtoImageOrPdf(svgString, exportFileName, exportFileFormat)
-  	completeFileName = exportFileName+"."+exportFileFormat
+  	completeFileName = SAVE_PATH+exportFileName+"."+exportFileFormat
   	if !File.exist?('image.jpg') 
 	  	if exportFileFormat != "svg"
 		  	img = Magick::Image.from_blob(svgString) {
