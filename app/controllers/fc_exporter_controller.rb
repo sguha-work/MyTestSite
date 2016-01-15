@@ -35,7 +35,11 @@ class FcExporterController < ApplicationController
   def checkAndCreateDirectories(directoriesNameArray)
   	directoriesNameArray.each do |directoryName|
   		if !File.directory?(directoryName) # if the directory doesn't exists create that
-  			Dir.mkdir directoryName
+  			begin
+  				Dir.mkdir directoryName
+  			rescue
+  				raiseError("403") # raising error if directory cann't be created
+  			end	
   		end	
   	end	
   end	
@@ -129,15 +133,21 @@ class FcExporterController < ApplicationController
 		  	img = Magick::Image.from_blob(svgString) {
 			  self.format = 'SVG'
 			}
-			img[0].write(completeFileName)
+			begin
+				img[0].write(completeFileName)
+			rescue
+				raiseError("403") # raising error if image cannot be created	
+			end	
 		else
-			file = File.open(completeFileName, 'w')
-			file.write(svgString) 
-			file.close()
+			begin
+				file = File.open(completeFileName, 'w')
+				file.write(svgString) 
+				file.close()
+			rescue
+				raiseError("403") # raising error if file cannot be created	
+			end
 		end
 		sendFileToDownload(completeFileName)
-	else
-		raiseError()	
 	end	
   end	
 end
