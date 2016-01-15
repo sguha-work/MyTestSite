@@ -55,21 +55,37 @@ class FcExporterController < ApplicationController
   	exportFileName = "" # holds the name of the exported file
   	exportFormat = "" # holds the format of the exported files
   	exportAction = ""
+  	
+  	if requestData["stream"]
+  		stream = requestData["stream"]
+  	else
+  		raiseError("101")	
+  	end
 
-  	stream = requestData["stream"]
   	if requestData["encodedImgData"]
   		imageData = requestData["encodedImgData"]
   	end
+  	
   	if requestData["meta_width"]!="" && requestData["meta_height"] !=""
   		width = requestData["meta_width"]
   		height = requestData["meta_height"]
   	else
   		raiseError("101")	
   	end
-  	parametersArray = requestData["parameters"].split("|")
-  	exportFileName = parametersArray[0].split("=").last
-  	exportFormat = parametersArray[1].split("=").last
-  	exportAction = parametersArray[2].split("=").last
+  	
+  	if requestData["parameters"] != ""
+  		parametersArray = requestData["parameters"].split("|")
+	else
+		raiseError("100")  		
+  	end
+
+  	if 	parametersArray[0].split("=").last && parametersArray[1].split("=").last && parametersArray[2].split("=").last
+	  	exportFileName = parametersArray[0].split("=").last
+	  	exportFormat = parametersArray[1].split("=").last
+	  	exportAction = parametersArray[2].split("=").last
+    else
+    	raiseError("100")  		
+  	end
   	
   	# preparing the request object
   	requestObject = {
